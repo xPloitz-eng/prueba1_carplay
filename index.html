@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Golf Widgets — Editor para Windows</title>
+  <style>
+    :root{color-scheme:dark;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;background:#0a0b0f;color:#f2f4f8}
+    *{box-sizing:border-box}body{margin:0;padding:36px 20px 70px}
+    .shell{max-width:1050px;margin:auto}h1{font-size:clamp(30px,4vw,49px);letter-spacing:-1.7px;margin:0 0 8px}
+    .lead{color:#9ca5b5;margin:0 0 28px;line-height:1.6}.tag{font-size:12px;letter-spacing:2px;color:#ff7065;font-weight:800;margin-bottom:10px}
+    .layout{display:grid;grid-template-columns:minmax(260px,1fr) minmax(300px,1.2fr);gap:25px}
+    .pane{padding:26px;border:1px solid #252934;background:#11141b;border-radius:24px}
+    .pane h2{font-size:18px;margin:0 0 20px}.tabs{display:flex;gap:8px;margin-bottom:24px}
+    button{cursor:pointer;border:0;border-radius:12px;padding:11px 14px;background:#2d3240;color:#fff;font-weight:700}
+    button.active{background:#f0443b}.field{margin-bottom:17px}label{display:block;color:#bac1ce;font-size:13px;font-weight:700;margin-bottom:7px}
+    input[type=text]{width:100%;border:1px solid #373b48;background:#1c202a;border-radius:10px;padding:11px;color:white;font-size:14px}
+    .colors{display:flex;gap:16px}.colors .field{flex:1;min-width:0}input[type=color]{height:42px;width:100%;background:transparent;border:0;cursor:pointer}
+    .check{display:flex;align-items:center;gap:10px;margin:4px 0 24px}.check label{margin:0}
+    .preview-pane{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:450px}
+    .preview-pane h2{align-self:stretch}.screen{padding:26px;background:#050609;border:7px solid #313843;border-radius:32px;box-shadow:0 30px 50px #0008;width:min(100%,390px)}
+    .screen-caption{font-size:10px;text-align:center;letter-spacing:2px;color:#8e96a3;margin-bottom:20px}
+    .widget{aspect-ratio:1;border-radius:25px;padding:22px;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;position:relative;color:white;box-shadow:inset 0 0 0 1px #ffffff16}
+    .widget::after{content:"";position:absolute;right:-52px;top:-48px;width:200px;height:200px;border:35px solid var(--accent);opacity:.08;border-radius:50%;pointer-events:none}
+    .widget .top{display:flex;justify-content:space-between;align-items:center;gap:14px;font-weight:900;font-size:16px;letter-spacing:.8px;z-index:1}
+    .widget .emblem{border:1.7px solid var(--accent);border-radius:50%;width:35px;height:35px;display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:13px}
+    .widget .bottom{z-index:1}.widget .subtitle{font-size:15px;color:#d7dce6;font-weight:700;overflow-wrap:anywhere}
+    .widget .clock{font-size:52px;line-height:1.15;font-weight:850;letter-spacing:-2px;margin:8px 0 13px;font-variant-numeric:tabular-nums}
+    .widget .bar{background:var(--accent);height:4px;border-radius:9px;margin-bottom:10px}
+    .widget .foot{color:#c4cbd6;letter-spacing:2px;font-size:10px;font-weight:800;overflow-wrap:anywhere}
+    .note{font-size:12px;color:#929bab;line-height:1.65;max-width:390px;text-align:center}
+    .actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:24px}.actions button:nth-child(2){background:#41536b}.status{color:#8de7b7;font-size:12px;min-height:20px;margin-top:13px}
+    @media(max-width:740px){.layout{grid-template-columns:1fr}.preview-pane{min-height:0}.screen{max-width:335px}body{padding-top:22px}}
+  </style>
+</head>
+<body><main class="shell">
+  <div class="tag">PROYECTO PERSONAL · GOLF 7.5</div>
+  <h1>Golf Widgets<span style="color:#f0443b">.</span></h1>
+  <p class="lead">Diseña el widget en Windows antes de llevarlo a tu iPhone. Dos estilos: deportivo y totalmente personalizado.</p>
+  <div class="layout">
+    <section class="pane">
+      <h2>Editor del widget</h2>
+      <div class="tabs"><button id="sportBtn">Deportivo</button><button id="customBtn">Personalizado</button></div>
+      <div class="field"><label for="title">Título</label><input id="title" type="text" maxlength="40"></div>
+      <div class="field"><label for="subtitle">Subtítulo</label><input id="subtitle" type="text" maxlength="40"></div>
+      <div class="field"><label for="footer">Texto inferior</label><input id="footer" type="text" maxlength="40"></div>
+      <div class="colors"><div class="field"><label for="accent">Color de acento</label><input type="color" id="accent"></div><div class="field"><label for="background">Fondo</label><input type="color" id="background"></div></div>
+      <div class="check"><input type="checkbox" id="showClock"><label for="showClock">Mostrar reloj</label></div>
+      <div class="actions"><button id="save">Guardar configuración</button><button id="export">Exportar JSON</button></div>
+      <p class="status" id="status" role="status"></p>
+    </section>
+    <section class="pane preview-pane"><h2>Vista previa</h2>
+      <div class="screen"><div class="screen-caption">SIMULACIÓN DEL WIDGET · NO ES CARPLAY REAL</div>
+        <div class="widget" id="widget"><div class="top"><span id="v-title"></span><span class="emblem" id="emblem">GW</span></div>
+          <div class="bottom"><div class="subtitle" id="v-subtitle"></div><div class="clock" id="v-clock"></div><div class="bar"></div><div class="foot" id="v-footer"></div></div>
+        </div>
+      </div><p class="note">El diseño exacto puede variar en CarPlay: Apple determina la composición, el fondo y el tamaño de sus pilas de widgets.</p>
+    </section>
+  </div>
+</main><script>
+const defaults={theme:'sport',sport:{title:'GOLF 7.5',subtitle:'1.6 TDI',footer:'SPORT EDITION',accent:'#f44336',background:'#111319',showClock:true},custom:{title:'MI GOLF',subtitle:'A mi manera',footer:'PERSONALIZADO',accent:'#69daf9',background:'#0d1b32',showClock:true}};
+let settings=structuredClone(defaults);
+const ids=['title','subtitle','footer','accent','background','showClock'];
+const $=id=>document.getElementById(id);
+function loadForm(){const s=settings[settings.theme];ids.forEach(k=>{if(k==='showClock')$(k).checked=s[k];else $(k).value=s[k]});$('sportBtn').classList.toggle('active',settings.theme==='sport');$('customBtn').classList.toggle('active',settings.theme==='custom');render()}
+function render(){const s=settings[settings.theme];$('widget').style.background=s.background;$('widget').style.setProperty('--accent',s.accent);$('v-title').textContent=s.title;$('v-subtitle').textContent=s.subtitle;$('v-footer').textContent=s.footer;$('emblem').textContent=settings.theme==='sport'?'GW':'★';$('v-clock').hidden=!s.showClock;updateClock()}
+function updateClock(){const t=new Date();$('v-clock').textContent=t.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'})}
+ids.forEach(k=>$(k).addEventListener('input',()=>{settings[settings.theme][k]=k==='showClock'?$(k).checked:$(k).value;render();$('status').textContent='Cambios pendientes de guardar'}));
+$('sportBtn').onclick=()=>{settings.theme='sport';loadForm()};$('customBtn').onclick=()=>{settings.theme='custom';loadForm()};
+$('save').onclick=async()=>{try{const r=await fetch('/api/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(settings)});if(!r.ok)throw new Error('Comprueba que Python está ejecutándose y los colores son válidos.');$('status').textContent='Configuración guardada en config.json'}catch(e){$('status').textContent='No se pudo guardar: '+e.message}};
+$('export').onclick=()=>{const blob=new Blob([JSON.stringify(settings,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='golf-widgets-config.json';a.click();URL.revokeObjectURL(url)};
+fetch('/api/config').then(r=>r.ok?r.json():defaults).then(d=>{settings=d;loadForm()}).catch(()=>loadForm());setInterval(updateClock,10000);
+</script></body></html>

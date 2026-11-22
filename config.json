@@ -1,0 +1,19 @@
+{
+  "theme": "sport",
+  "sport": {
+    "title": "GOLF 7.5",
+    "subtitle": "1.6 TDI",
+    "footer": "SPORT EDITION",
+    "accent": "#F44336",
+    "background": "#111319",
+    "showClock": true
+  },
+  "custom": {
+    "title": "MI GOLF",
+    "subtitle": "A mi manera",
+    "footer": "PERSONALIZADO",
+    "accent": "#69DAF9",
+    "background": "#0D1B32",
+    "showClock": true
+  }
+}

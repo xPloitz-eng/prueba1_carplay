@@ -1,0 +1,51 @@
+# Para generar GolfWidgets.xcodeproj en un Mac con XcodeGen:
+#   xcodegen generate
+# Antes de firmar, cambiar los bundle identifiers y App Group.
+name: GolfWidgets
+options:
+  deploymentTarget:
+    iOS: "26.0"
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    TARGETED_DEVICE_FAMILY: "1"
+targets:
+  GolfWidgets:
+    type: application
+    platform: iOS
+    sources:
+      - ios/GolfWidgets
+      - ios/Shared
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.golfwidgets.personal
+        GENERATE_INFOPLIST_FILE: YES
+        MARKETING_VERSION: 1.0.0
+        CURRENT_PROJECT_VERSION: 1
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_CFBundleDisplayName: "Golf Widgets"
+    dependencies:
+      - target: GolfWidgetsWidget
+        embed: true
+  GolfWidgetsWidget:
+    type: app-extension
+    platform: iOS
+    sources:
+      - ios/GolfWidgetsWidget
+      - ios/Shared
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.golfwidgets.personal.Widget
+        GENERATE_INFOPLIST_FILE: YES
+        MARKETING_VERSION: 1.0.0
+        CURRENT_PROJECT_VERSION: 1
+        INFOPLIST_KEY_CFBundleDisplayName: "Golf Widgets"
+        APPLICATION_EXTENSION_API_ONLY: YES
+        SKIP_INSTALL: YES
+    info:
+      path: ios/GolfWidgetsWidget/Info.plist
+      properties:
+        CFBundleDisplayName: Golf Widgets
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
