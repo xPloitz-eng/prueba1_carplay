@@ -54,5 +54,6 @@ struct GolfWidgetsBundle: WidgetBundle {
     var body: some Widget {
         GolfSportWidget()
         GolfCustomWidget()
+        GolfLiveActivityWidget()
     }
 }

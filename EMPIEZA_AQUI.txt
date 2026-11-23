@@ -1,0 +1,36 @@
+GOLF PERFORMANCE 2.1 — PROYECTO COMPLETO PARA IPHONE
+=====================================================
+
+YA CONOCEMOS TU ADAPTADOR: OBDII / Bluetooth LE (4.0+)
+
+1. En Windows, descomprime este ZIP.
+2. Abre tu repositorio con GitHub Desktop (clonado en una carpeta de tu PC).
+3. Copia TODO el contenido de la carpeta GolfWidgetsGratis dentro de la RAÍZ
+   del repositorio, sustituyendo los archivos antiguos.
+   Incluye .github/workflows, ios/, scripts/, project.yml, config.json.
+4. En GitHub Desktop: Commit to main -> Push origin.
+5. En GitHub -> Actions -> "Compilar IPA iPhone gratis (sin firmar)".
+   Ejecuta Run workflow si no se inició automáticamente.
+6. Cuando esté verde: entra en la ejecución -> Artifacts -> GolfWidgetsGratis-IPA.
+   Extrae GolfWidgetsGratis.ipa e instálalo con Sideloadly, como antes.
+7. Desconecta Car Scanner del ELM. Contacto del Golf encendido y coche parado.
+8. Golf Performance -> Buscar adaptadores Bluetooth -> OBDII -> conectar.
+9. Comprueba RPM reales; después "Ver cuadro deportivo a pantalla completa".
+   Gira el iPhone horizontalmente (sin bloqueo de orientación).
+10. Iniciar en CarPlay -> prueba la Live Activity en el Dashboard.
+
+IMPORTANTE:
+- En iPhone SÍ verás el cuadro completo con dial 0–6.000 RPM.
+- En CarPlay solo se intenta mostrar una Live Activity compacta de RPM,
+  velocidad y refrigerante; no el cuadro completo con tres paneles.
+- Las actualizaciones CarPlay las controla iOS; no se garantizan en tiempo real.
+- No se ha compilado este código con Xcode aquí ni probado con tu ELM real.
+- El modo DEMO simula lecturas y está claramente marcado.
+- No uses esta app como instrumentación de seguridad ni el teléfono conduciendo.
+- La firma gratuita con Sideloadly caduca típicamente en 7 días.
+
+Si GitHub Actions falla, copia el PRIMER error rojo del log y lo arreglamos.
+Si no aparece OBDII, cierra Car Scanner, comprueba Bluetooth y busca otra vez.
+
+Proyecto base anterior conservado: app, 2 widgets estáticos, BLE/Wi-Fi,
+parser OBD, Live Activity, workflows GitHub Actions, editor HTML y tests.

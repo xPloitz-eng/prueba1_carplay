@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#080d14">
+<title>Golf Performance · Demo en marcha</title>
+<style>
+:root{color-scheme:dark;--bg:#070c12;--panel:#0c151e;--panel2:#101d29;--line:#243343;--muted:#8c9fb0;--text:#f6f8fc;--accent:#f14043;--accent2:#ff8b57;--glow:rgba(241,64,67,.28)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;margin:0;background:#03070d;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Arial,sans-serif;overflow:hidden}
+body{touch-action:pan-y}
+button{font:inherit;cursor:pointer;color:inherit}
+button:focus-visible,input:focus-visible{outline:2px solid #fff;outline-offset:3px}
+#app{height:100svh;min-height:290px;display:flex;flex-direction:column;gap:7px;padding:max(8px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));background:radial-gradient(ellipse 46% 52% at 52% 55%,rgba(34,57,76,.24),transparent),linear-gradient(140deg,#080e16,#03070c)}
+.top{height:48px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-shrink:0;padding:0 10px}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.emblem{height:40px;width:40px;border:2px solid #6e8092;box-shadow:0 0 0 3px #151f28,inset 0 0 12px #050b15;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;letter-spacing:-2px;color:#dfe8f3;transform:skew(-6deg);flex:none}
+.brand-name{font-size:15px;font-weight:850;letter-spacing:2.2px;white-space:nowrap}
+.brand-line{font-size:10px;color:var(--muted);letter-spacing:2.5px;margin-top:3px;white-space:nowrap}
+.brand-line strong{color:var(--accent);font-weight:800}
+.top-right{display:flex;align-items:center;gap:7px;min-width:0}
+.demo-pill{display:inline-flex;align-items:center;gap:7px;padding:7px 10px;border:1px solid #744136;background:#311c1b;border-radius:20px;color:#ffb2a9;font-size:10px;font-weight:800;letter-spacing:.7px;white-space:nowrap}
+.blink{width:7px;height:7px;background:var(--accent);border-radius:50%;box-shadow:0 0 8px var(--accent);animation:blink 1.8s infinite}
+@keyframes blink{50%{opacity:.35}}
+.controls{display:flex;gap:6px}
+.ctrl{padding:8px 11px;border:1px solid #2b3e51;border-radius:9px;background:#14202c;color:#d5e2ee;font-size:11px;font-weight:750;white-space:nowrap;min-height:33px}
+.ctrl:hover,.ctrl:active{background:#263748}
+.ctrl.active{border-color:var(--accent);color:#fff;background:linear-gradient(120deg,#562528,#29191e)}
+.ctrl svg{width:14px;height:14px;vertical-align:-3px}
+.stage{min-height:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.06fr) minmax(0,1fr);gap:7px;flex:1}
+.panel{position:relative;min-width:0;min-height:0;border-radius:15px;overflow:hidden;border:1px solid rgba(93,117,137,.22);background:linear-gradient(150deg,rgba(20,34,46,.95),rgba(8,16,24,.96) 70%);box-shadow:inset 0 1px 0 rgba(176,212,242,.055)}
+.panel:after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.2;background:repeating-linear-gradient(0deg,transparent 0,transparent 4px,rgba(136,160,181,.09) 5px);mask-image:linear-gradient(90deg,transparent,#000,transparent)}
+.panel-title{position:absolute;top:11px;left:14px;color:#98aebe;font-weight:800;letter-spacing:1.6px;font-size:10px;z-index:2}
+.panel-title .accent{color:var(--accent)}
+.tach{display:flex;align-items:center;justify-content:center}
+.tach-svg{height:min(100%,330px);width:min(98%,330px);filter:drop-shadow(0 0 23px var(--glow))}
+.tach-num{font-size:51px;font-weight:850;fill:var(--text);letter-spacing:-2px}
+.tach-label{font-size:11px;font-weight:750;fill:#8a9eaf;letter-spacing:2.2px}
+.tick-text{font-size:13px;fill:#8e9fb0;font-weight:750}
+.tach-foot{position:absolute;bottom:10px;width:100%;text-align:center;font-size:10px;color:#a2b5c4;letter-spacing:1px}
+.speed-panel{display:flex;flex-direction:column;align-items:center;justify-content:center;isolation:isolate;background:radial-gradient(circle at 50% 58%,rgba(226,50,62,.12),transparent 63%),linear-gradient(135deg,#101c29,#070c14)}
+.speed-panel:before{content:"";position:absolute;width:45%;aspect-ratio:1;left:27%;top:11%;border:1px solid rgba(220,67,68,.12);border-radius:50%;box-shadow:0 0 0 28px rgba(246,56,57,.018),0 0 0 58px rgba(246,56,57,.016)}
+.speed-head{font-size:11px;font-weight:800;color:#a5b7c6;letter-spacing:2px;margin-top:5px;z-index:1}
+.speed-number{font-weight:850;font-variant-numeric:tabular-nums;letter-spacing:-8px;font-size:clamp(68px,11.6vw,180px);line-height:1.04;text-shadow:0 0 28px rgba(251,250,250,.10);z-index:1}
+.speed-unit{font-size:12px;letter-spacing:3px;color:#d0d9e2;font-weight:750;z-index:1}
+.gear{margin-top:9px;color:#dce8f2;border:1px solid #4b3040;background:rgba(241,64,67,.11);border-radius:7px;padding:4px 12px;font-size:15px;font-weight:850;z-index:1;letter-spacing:1px}
+.road{position:absolute;bottom:13px;left:12%;width:76%;height:16px;display:flex;align-items:center;gap:4px;opacity:.6}
+.road i{flex:1;height:2px;background:#4c6173;border-radius:5px;transform:skew(-35deg)}
+.road i:nth-child(4),.road i:nth-child(5){height:3px;background:var(--accent);box-shadow:0 0 7px var(--accent)}
+.right-panel{display:flex;flex-direction:column;justify-content:space-evenly;padding:26px 14px 7px}
+.metric{display:flex;flex-direction:column;gap:6px;position:relative;z-index:1}
+.metric-top{display:flex;align-items:baseline;justify-content:space-between;gap:4px}
+.metric-name{font-size:10px;color:#a7b8c6;font-weight:850;letter-spacing:1.25px}
+.metric-value{font-weight:850;font-size:clamp(16px,2.8vw,30px);letter-spacing:-.5px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.metric-value small{font-size:10px;color:#9daebd;font-weight:700;letter-spacing:0}
+.meter{height:8px;background:#1c2c3a;border-radius:5px;overflow:hidden;position:relative;border:1px solid #293845}
+.meter-fill{width:50%;height:100%;background:linear-gradient(90deg,#9a2834,var(--accent),var(--accent2));border-radius:5px;box-shadow:0 0 11px var(--glow);transition:width .15s linear}
+.meter-fill.temp{background:linear-gradient(90deg,#34577b,#a5bdd0)}
+.meter-fill.load{background:linear-gradient(90deg,#35516c,#5dbad6)}
+.meter-label{display:flex;justify-content:space-between;color:#70879b;font-size:9px;letter-spacing:.2px}
+.bottom{flex-shrink:0;height:70px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+.bottom-cell{border-radius:11px;padding:10px 15px;background:#0d1722;border:1px solid rgba(93,117,137,.22);display:flex;justify-content:center;flex-direction:column;min-width:0}
+.bottom-cell .small{font-size:9px;color:#92a7b9;letter-spacing:1.35px;font-weight:800;white-space:nowrap}
+.bottom-cell .big{font-size:19px;font-weight:800;margin-top:5px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.bottom-cell .big small{font-size:10px;color:#869cac;font-weight:650}
+.disclaimer{position:absolute;bottom:0;right:0;color:#415769;font-size:8px}
+.rotate{display:none;position:fixed;inset:0;z-index:20;background:#090f18eF;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:26px;gap:14px}
+.rotate-icon{border:2px solid #91a3b4;border-radius:12px;width:68px;height:114px;transform:rotate(90deg);display:flex;align-items:center;justify-content:center;box-shadow:0 0 35px rgba(235,57,61,.18);font-size:28px}
+.rotate h2{margin:0;font-size:24px}.rotate p{margin:0;max-width:380px;color:#aebfce;font-size:14px;line-height:1.6}
+.rotate button{margin-top:7px;background:var(--accent);border:0;border-radius:12px;padding:13px 22px;font-weight:850}
+@media (orientation:portrait){.rotate:not(.hidden){display:flex}}
+@media (max-height:520px){#app{gap:5px;padding-top:max(4px,env(safe-area-inset-top));padding-bottom:max(5px,env(safe-area-inset-bottom))}.top{height:39px;padding-inline:6px}.emblem{width:32px;height:32px;font-size:12px}.brand{gap:8px}.brand-name{font-size:12px;letter-spacing:1.5px}.brand-line{font-size:9px;letter-spacing:1.3px}.demo-pill{font-size:9px;padding:6px 8px}.ctrl{min-height:29px;padding:5px 8px;font-size:10px}.bottom{height:58px;gap:5px}.bottom-cell{padding:6px 11px}.bottom-cell .big{font-size:17px;margin-top:2px}.right-panel{padding:22px 11px 4px}.metric{gap:4px}.metric-value{font-size:clamp(15px,2.55vw,24px)}.metric-name{font-size:9px}.panel-title{font-size:9px;top:9px;left:11px}.tach-foot{font-size:9px;bottom:6px}.gear{margin-top:5px;font-size:12px;padding:3px 9px}.speed-head{font-size:9px}.speed-unit{font-size:10px}.road{bottom:5px}}
+@media (max-width:720px) and (orientation:landscape){.ctrl .long{display:none}.top-right{gap:5px}.ctrl{padding:5px 8px}.stage{grid-template-columns:1fr 1fr 1fr}.speed-number{font-size:12vw}.metric-name{font-size:8px}.right-panel{padding-inline:9px}.brand-line{display:none}.bottom-cell{padding-inline:8px}.bottom-cell .small{font-size:8px}.bottom-cell .big{font-size:15px}}
+@media (prefers-reduced-motion:reduce){.blink{animation:none}.meter-fill{transition:none}}
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="top">
+    <div class="brand">
+      <div class="emblem" aria-hidden="true">VW</div>
+      <div><div class="brand-name">GOLF <span style="color:var(--accent)">PERFORMANCE</span></div><div class="brand-line">MK7.5 <strong>1.6 TDI</strong> · SPORT DIGITAL</div></div>
+    </div>
+    <div class="top-right">
+      <div class="demo-pill"><span class="blink"></span> DATOS SIMULADOS</div>
+      <nav class="controls" aria-label="Controles de demostración">
+        <button type="button" class="ctrl" id="play" title="Pausar simulación">Ⅱ <span class="long">PAUSA</span></button>
+        <button type="button" class="ctrl" id="accelerate" title="Simular una aceleración">↗ <span class="long">ACELERAR</span></button>
+        <button type="button" class="ctrl active" id="mode" title="Alternar estilo">SPORT</button>
+        <button type="button" class="ctrl" id="full" title="Pantalla completa" aria-label="Pantalla completa">⛶</button>
+      </nav>
+    </div>
+  </header>
+  <main class="stage">
+    <section class="panel tach" aria-label="Revoluciones del motor">
+      <div class="panel-title">MOTOR <span class="accent">/</span> RPM</div>
+      <svg class="tach-svg" viewBox="0 0 260 260" role="img" aria-label="Tacómetro de 0 a 6.000 revoluciones por minuto">
+        <defs><linearGradient id="arcGradient" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#8b2133"/><stop offset="60%" stop-color="#f14043"/><stop offset="100%" stop-color="#ff9961"/></linearGradient></defs>
+        <path id="arcTrack" stroke="#223242" stroke-width="17" stroke-linecap="round" fill="none"></path>
+        <path id="arcProgress" stroke="url(#arcGradient)" stroke-width="17" stroke-linecap="round" fill="none"></path>
+        <g id="ticks"></g>
+        <text x="130" y="137" text-anchor="middle" class="tach-num" id="rpmMain">2.4</text>
+        <text x="130" y="158" text-anchor="middle" class="tach-label">× 1000 RPM</text>
+        <circle cx="130" cy="191" r="3" fill="var(--accent)"></circle>
+      </svg>
+      <div class="tach-foot">ESCALA VW <span style="color:var(--accent)">●</span> 0–6.000</div>
+    </section>
+    <section class="panel speed-panel" aria-label="Velocidad y marcha simuladas">
+      <div class="panel-title">VELOCIDAD <span class="accent">/</span> OBD</div>
+      <div class="speed-head">GOLF 7.5</div>
+      <div class="speed-number" id="speed">087</div>
+      <div class="speed-unit">KM/H</div>
+      <div class="gear" id="gear">M 4</div>
+      <div class="road" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    </section>
+    <section class="panel right-panel" aria-label="Otros parámetros simulados del motor">
+      <div class="panel-title">TELEMETRÍA <span class="accent">/</span> ELM327</div>
+      <div class="metric"><div class="metric-top"><span class="metric-name">TURBO · ESTIMADO</span><span class="metric-value"><span id="turbo">1,0</span> <small>bar</small></span></div><div class="meter"><div id="turboFill" class="meter-fill"></div></div><div class="meter-label"><span>0,0</span><span>1,8 bar</span></div></div>
+      <div class="metric"><div class="metric-top"><span class="metric-name">TEMP. REFRIGERANTE</span><span class="metric-value"><span id="temp">90</span><small>°C</small></span></div><div class="meter"><div id="tempFill" class="meter-fill temp"></div></div><div class="meter-label"><span>40 °C</span><span>120 °C</span></div></div>
+      <div class="metric"><div class="metric-top"><span class="metric-name">CARGA DEL MOTOR</span><span class="metric-value"><span id="load">56</span> <small>%</small></span></div><div class="meter"><div id="loadFill" class="meter-fill load"></div></div><div class="meter-label"><span>0 %</span><span>100 %</span></div></div>
+    </section>
+  </main>
+  <footer class="bottom">
+    <div class="bottom-cell"><div class="small">DISTANCIA · DEMO</div><div class="big"><span id="distance">0,0</span> <small>km</small></div></div>
+    <div class="bottom-cell"><div class="small">CONSUMO · DEMO</div><div class="big"><span id="fuel">5,2</span> <small>L/100</small></div></div>
+    <div class="bottom-cell"><div class="small">TIEMPO SIMULADO</div><div class="big" id="timer">00:00</div></div>
+    <div class="bottom-cell"><div class="small">ADAPTADOR</div><div class="big" style="font-size:15px;color:#e1a5a0">OBDII <small>sin conectar</small></div></div>
+  </footer>
+</div>
+<div id="rotate" class="rotate">
+  <div class="rotate-icon" aria-hidden="true">↻</div>
+  <h2>Gira el iPhone ↔</h2>
+  <p>Esta demo está diseñada para verse en <strong>horizontal</strong>, como la pantalla CarPlay de tu Golf 7.5.</p>
+  <button type="button" id="continue">Ver igualmente</button>
+</div>
+<script>
+(()=>{
+  'use strict';
+  const $=id=>document.getElementById(id);
+  const values={speed:$('speed'),rpm:$('rpmMain'),gear:$('gear'),turbo:$('turbo'),turboFill:$('turboFill'),temp:$('temp'),tempFill:$('tempFill'),load:$('load'),loadFill:$('loadFill'),distance:$('distance'),fuel:$('fuel'),timer:$('timer')};
+  const cycle=[[0,0],[3,22],[6,44],[9,67],[12,85],[16,104],[20,118],[23,110],[26,78],[29,54],[32,81],[36,108],[41,126],[47,96],[52,48],[56,0],[60,0]];
+  function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+  function polar(r,deg){let a=(deg-90)*Math.PI/180;return [130+r*Math.cos(a),130+r*Math.sin(a)]}
+  function arc(a,b,r=102){const p=polar(r,a),q=polar(r,b);return `M ${p[0].toFixed(3)} ${p[1].toFixed(3)} A ${r} ${r} 0 ${b-a>180?1:0} 1 ${q[0].toFixed(3)} ${q[1].toFixed(3)}`}
+  $('arcTrack').setAttribute('d',arc(220,500));
+  const ticks=$('ticks');
+  for(let i=0;i<=30;i++){
+    const angle=220+(i/30)*280,major=i%5===0;
+    const p=polar(major?81:87,angle),q=polar(96,angle);
+    const ln=document.createElementNS('http://www.w3.org/2000/svg','line');
+    for(let [k,v] of Object.entries({x1:p[0],y1:p[1],x2:q[0],y2:q[1],stroke:i>=25?'#e75a57':'#6f8394','stroke-width':major?2.7:1.4,'stroke-linecap':'round'}))ln.setAttribute(k,v);
+    ticks.appendChild(ln);
+    if(major){const xy=polar(67,angle),t=document.createElementNS('http://www.w3.org/2000/svg','text');t.setAttribute('x',xy[0]);t.setAttribute('y',xy[1]+5);t.setAttribute('text-anchor','middle');t.setAttribute('class','tick-text');t.textContent=String(i/5);ticks.appendChild(t)}
+  }
+  let paused=false,styleSport=true,elapsed=9.6,dist=.13,last=0,prevSpeed=0,surge=0;
+  function targetSpeed(t){const sec=((t%60)+60)%60;let i=0;while(i<cycle.length-2&&cycle[i+1][0]<sec)i++;const a=cycle[i],b=cycle[i+1],f=clamp((sec-a[0])/(b[0]-a[0]),0,1);return a[1]+(b[1]-a[1])*f}
+  function render(ts){if(!last)last=ts;const dt=clamp((ts-last)/1000,0,.12);last=ts;
+    if(!paused)elapsed+=dt;
+    const target=targetSpeed(elapsed),speed=clamp(target+(surge>0?Math.min(20,surge*3.4):0),0,145);
+    if(!paused){dist+=speed*dt/3600;surge=Math.max(0,surge-dt)}
+    const diff=(speed-prevSpeed)/Math.max(.01,dt);prevSpeed=speed;
+    const gear=speed<12?1:speed<31?2:speed<54?3:speed<79?4:speed<107?5:6;
+    const ratios=[0,124,75,51,36,29,23];
+    const rpm=clamp(speed<3?820:760+speed*ratios[gear]+Math.max(0,diff)*15,800,4740);
+    const load=clamp(24+Math.max(-22,Math.min(58,diff*3.7))+(speed/145)*24+(surge>0?12:0),8,100);
+    const turbo=clamp(.1+(load/100)*1.38+Math.sin(elapsed*1.6)*.07,0,1.8);
+    const temp=90+Math.round(Math.sin(elapsed/18)*2);
+    const fuel=clamp(3.2+load*.038+(surge>0?1:0),2.8,9.8);
+    values.speed.textContent=String(Math.round(speed)).padStart(3,'0');
+    values.rpm.textContent=(rpm/1000).toFixed(1);
+    values.gear.textContent='M '+gear;
+    values.turbo.textContent=turbo.toFixed(1).replace('.',',');
+    values.turboFill.style.width=(100*turbo/1.8).toFixed(1)+'%';
+    values.temp.textContent=temp;
+    values.tempFill.style.width=(100*(temp-40)/80)+'%';
+    values.load.textContent=Math.round(load);
+    values.loadFill.style.width=load.toFixed(1)+'%';
+    values.distance.textContent=dist.toFixed(1).replace('.',',');
+    values.fuel.textContent=fuel.toFixed(1).replace('.',',');
+    values.timer.textContent=String(Math.floor(elapsed/60)).padStart(2,'0')+':'+String(Math.floor(elapsed%60)).padStart(2,'0');
+    $('arcProgress').setAttribute('d',arc(220,220+Math.max(.1,rpm/6000*280)));
+    requestAnimationFrame(render)
+  }
+  requestAnimationFrame(render);
+  $('play').addEventListener('click',()=>{paused=!paused;$('play').innerHTML=paused?'▶ <span class="long">SEGUIR</span>':'Ⅱ <span class="long">PAUSA</span>';$('play').classList.toggle('active',paused)});
+  $('accelerate').addEventListener('click',()=>{surge=5;paused=false;$('play').innerHTML='Ⅱ <span class="long">PAUSA</span>';$('play').classList.remove('active')});
+  $('mode').addEventListener('click',()=>{styleSport=!styleSport;const root=document.documentElement;root.style.setProperty('--accent',styleSport?'#f14043':'#28a8e6');root.style.setProperty('--accent2',styleSport?'#ff8b57':'#54d8eb');root.style.setProperty('--glow',styleSport?'rgba(241,64,67,.28)':'rgba(40,168,230,.28)');$('mode').textContent=styleSport?'SPORT':'BLUE';$('mode').classList.toggle('active',styleSport)});
+  $('full').addEventListener('click',async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen()}catch(e){alert('En iPhone Safari el modo pantalla completa puede no estar disponible. Gira el teléfono y oculta las barras si es posible.')}});
+  $('continue').addEventListener('click',()=>$('rotate').classList.add('hidden'));
+})();
+</script>
+</body>
+</html>
