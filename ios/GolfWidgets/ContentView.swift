@@ -93,9 +93,21 @@ struct ContentView: View {
             Text("CARPLAY · LIVE ACTIVITY").font(.headline)
             Text("Envía valores reales resumidos hacia CarPlay. iOS controla cuándo los pinta; la app del iPhone sí actualiza cada respuesta OBD.")
                 .font(.caption).foregroundStyle(.secondary)
-            Stepper("Intentar actualizar cada \(model.liveIntervalSeconds) s", value: $model.liveIntervalSeconds, in: 2...15)
-                .font(.caption)
-            Text("Intervalo solicitado, no garantizado: CarPlay decide cuándo redibujar la Live Activity.")
+            Picker("Intentar enviar a CarPlay", selection: $model.liveIntervalSeconds) {
+                Text("Instantáneo · cada lectura").tag(0.0)
+                Text("Cada 0,1 s").tag(0.1)
+                Text("Cada 0,25 s").tag(0.25)
+                Text("Cada 0,5 s").tag(0.5)
+                Text("Cada 1 s").tag(1.0)
+                Text("Cada 2 s").tag(2.0)
+                Text("Cada 3 s").tag(3.0)
+                Text("Cada 5 s").tag(5.0)
+                Text("Cada 10 s").tag(10.0)
+                Text("Cada 15 s").tag(15.0)
+            }
+            .pickerStyle(.menu)
+            .font(.caption)
+            Text("Instantáneo = enviar cada nueva lectura OBD sin espera artificial. Las lecturas del ELM siguen siendo continuas en todos los modos. iOS decide cuándo actualizar lo visible en CarPlay.")
                 .font(.caption2).foregroundStyle(.gray)
             HStack {
                 Button("Iniciar en CarPlay") { model.startLive() }

@@ -12,7 +12,8 @@ final class PerformanceModel: ObservableObject {
     @Published var demo = false
     @Published var liveStatus = "No iniciada"
     @Published var liveEnabled = false
-    @Published var liveIntervalSeconds = 3
+    // 0 = enviar inmediatamente después de cada respuesta OBD (sin retraso artificial).
+    @Published var liveIntervalSeconds: Double = 0
     @Published var host = "192.168.0.10"
     @Published var port = "35000"
 
@@ -27,6 +28,9 @@ final class PerformanceModel: ObservableObject {
     private var timer: Timer?
     private var demoTicks = 0
     private var lastLiveSend = Date.distantPast
+    // Evita enviar actualizaciones ActivityKit simultáneas cuando el ELM responde rápido.
+    private var liveUpdateInProgress = false
+    private var liveUpdateQueued = false
     private var liveActivity: Activity<GolfPerformanceAttributes>?
 
     func scanBLE() {
@@ -184,6 +188,7 @@ final class PerformanceModel: ObservableObject {
                 liveActivity = try Activity.request(attributes: attr, content: content, pushType: nil)
                 liveEnabled = true
                 lastLiveSend = .distantPast
+                liveUpdateQueued = false
                 liveStatus = "Live Activity iniciada · CarPlay experimental"
                 maybePublishLive()
             } catch {
@@ -202,17 +207,41 @@ final class PerformanceModel: ObservableObject {
     }
 
     private func maybePublishLive() {
-        // El iPhone procesa OBD lo más rápido que puede; ActivityKit no es un HUD.
-        // Intervalo solicitado de prueba (2–15 s): iOS puede retrasar o limitar su presentación.
-        guard liveEnabled, let activity = liveActivity,
-              Date().timeIntervalSince(lastLiveSend) >= Double(liveIntervalSeconds) else { return }
-        lastLiveSend = .now
+        // La lectura ELM ya es continua: receive() manda el siguiente PID en cuanto llega ">".
+        // Intervalo 0 (Instantáneo) = intentar transmitir cada lectura nueva, sin espera artificial.
+        // ActivityKit/iOS puede retrasar o agrupar la actualización visible en CarPlay.
+        guard liveEnabled, let activity = liveActivity else { return }
+
+        // No lanzar varias llamadas Activity.update simultáneas: guardar la más reciente.
+        if liveUpdateInProgress {
+            liveUpdateQueued = true
+            return
+        }
+
+        let now = Date()
+        guard liveIntervalSeconds == 0 ||
+              now.timeIntervalSince(lastLiveSend) >= liveIntervalSeconds else { return }
+        lastLiveSend = now
+        liveUpdateInProgress = true
         let state = liveState()
-        Task { await activity.update(ActivityContent(state: state, staleDate: .now.addingTimeInterval(20))) }
+
+        Task { [weak self] in
+            await activity.update(ActivityContent(
+                state: state,
+                staleDate: .now.addingTimeInterval(20)
+            ))
+            guard let self else { return }
+            self.liveUpdateInProgress = false
+            if self.liveUpdateQueued {
+                self.liveUpdateQueued = false
+                self.maybePublishLive() // Envía el dato más nuevo, no todos los intermedios.
+            }
+        }
     }
 
     func stopLive() {
         liveEnabled = false
+        liveUpdateQueued = false
         let a = liveActivity
         liveActivity = nil
         liveStatus = "Live Activity detenida"
