@@ -1,6 +1,4 @@
-
 name: Compilar IPA iPhone gratis (sin firmar)
-
 on:
   push:
   workflow_dispatch:
@@ -10,17 +8,13 @@ jobs:
     runs-on: macos-26
     steps:
       - uses: actions/checkout@v4
-
       - name: Instalar XcodeGen
         run: brew install xcodegen
-
-      - name: Generar configuracion Swift
+      - name: Generar configuracion Swift desde config.json
         run: python3 scripts/generate_presets.py
-
       - name: Generar proyecto Xcode
         run: xcodegen generate
-
-      - name: Compilar app para iPhone
+      - name: Compilar app y extension para iPhone (sin firma)
         run: |
           xcodebuild \
             -project GolfWidgets.xcodeproj \
@@ -31,8 +25,7 @@ jobs:
             -derivedDataPath build/DerivedData \
             CODE_SIGNING_ALLOWED=NO \
             build
-
-      - name: Crear IPA sin firmar
+      - name: Crear IPA sin firmar y comprobar widget
         run: |
           set -e
           APP="build/DerivedData/Build/Products/Release-iphoneos/GolfWidgets.app"
@@ -42,7 +35,6 @@ jobs:
           cp -R "$APP" Payload/GolfWidgets.app
           /usr/bin/zip -qry GolfWidgetsGratis.ipa Payload
           unzip -l GolfWidgetsGratis.ipa | grep 'GolfWidgetsWidget.appex'
-
       - name: Descargar IPA desde Artifacts
         uses: actions/upload-artifact@v4
         with:
